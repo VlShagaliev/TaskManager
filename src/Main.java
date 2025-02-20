@@ -10,6 +10,8 @@ public class Main {
             String name;
             String description;
             int id;
+            int numberOfProgress;
+            Progress progress;
             command = Integer.parseInt(scanner.nextLine());
             switch (command) {
                 case 1:
@@ -17,8 +19,7 @@ public class Main {
                     name = scanner.nextLine();
                     System.out.print("Введите описание Эпика: ");
                     description = scanner.nextLine();
-                    id = taskManager.getTaskAndEpicCount();
-                    Epic newEpic = new Epic(name, description, ++id);
+                    Epic newEpic = new Epic(name, description);
                     taskManager.addEpic(newEpic);
                     break;
                 case 2:
@@ -26,9 +27,15 @@ public class Main {
                     name = scanner.nextLine();
                     System.out.print("Введите описание задачи: ");
                     description = scanner.nextLine();
-                    id = taskManager.getTaskAndEpicCount();
-                    Task newTask = new Task(name, description, ++id);
-                    taskManager.addTask(newTask);
+                    printMenuStatus();
+                    numberOfProgress = Integer.parseInt(scanner.nextLine());
+                    progress = setProgress(numberOfProgress);
+                    if (progress != null) {
+                        Task newTask = new Task(name, description, progress);
+                        if (taskManager.addTask(newTask) > 0) {
+                            System.out.println("Добавлена задача под номером: " + newTask.getId());
+                        }
+                    }
                     break;
                 case 3:
                     System.out.print("Введите ID Эпика которому хотите добавить подзадачу: ");
@@ -38,69 +45,70 @@ public class Main {
                         name = scanner.nextLine();
                         System.out.print("Введите описание подзадачи: ");
                         description = scanner.nextLine();
-                        Epic epicById = taskManager.getEpic(idEpic);
-                        int idForSubtask = epicById.getCountSubtask();
-                        Subtask newSubtaskForIdEpic = new Subtask(name, description, ++idForSubtask);
-                        taskManager.addSubtask(idEpic, newSubtaskForIdEpic);
+                        printMenuStatus();
+                        numberOfProgress = Integer.parseInt(scanner.nextLine());
+                        progress = setProgress(numberOfProgress);
+                        if (progress != null) {
+                            Subtask newSubtask = new Subtask(name, description, idEpic, progress);
+                            taskManager.addSubtask(newSubtask);
+                        }
                     } else {
                         System.out.println("Такого Эпика нет!");
                     }
                     break;
                 case 4:
-                    taskManager.printAll();
+                    taskManager.printAllTask();
                     break;
                 case 5:
-                    System.out.print("Введите ID задачи или Эпика который хотите вывести: ");
+                    taskManager.printAllEpic();
+                    break;
+                case 6:
+                    taskManager.printAllSubtask();
+                    break;
+                case 7:
+                    System.out.print("Введите ID задачи/Эпика/подзадачи которую хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
                     taskManager.printById(id);
                     break;
-                case 6:
-                    System.out.print("Введите ID Эпика который хотите вывести: ");
+                case 8:
+                    System.out.print("Введите ID Эпика подзадачи которого хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
                     taskManager.printSubtaskByIdEpic(id);
                     break;
-                case 7:
-                    taskManager.clearAll();
-                    return;
-                case 8:
-                    System.out.print("Введите ID задачи которую хотите удалить: ");
+                case 9:
+                    taskManager.clearTask();
+                    break;
+                case 10:
+                    taskManager.clearEpic();
+                    break;
+                case 11:
+                    taskManager.clearSubtask();
+                    break;
+                case 12:
+                    System.out.print("Введите ID: ");
                     id = Integer.parseInt(scanner.nextLine());
                     taskManager.deleteById(id);
                     break;
-                case 9:
-                    System.out.print("Введите ID задачи статус которой хотите обновить: ");
+                case 13:
+                    System.out.print("Введите номер задачи статус хоторой хотите обновить: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    int idProgress;
-                    Epic epic = taskManager.getEpic(id);
-                    if (epic.getSubtaskHashMap() != null && !epic.getSubtaskHashMap().isEmpty()) {
-                        if (taskManager.checkIdInEpic(id)) {
-                            System.out.print("Введите номер подзадачи статус хоторой хотите обновить: ");
-                            int idSubtask = Integer.parseInt(scanner.nextLine());
-                            if (taskManager.checkIdSubtask(id, idSubtask)) {
-                                printMenuStatus();
-                                idProgress = Integer.parseInt(scanner.nextLine());
-                                if (idProgress == 1 || idProgress == 2) {
-                                    taskManager.updateEpic(id, idSubtask, idProgress);
-                                } else {
-                                    System.out.println("Такого статуса нет!");
-                                }
-                            } else {
-                                System.out.println("Такой подзадачи нет!");
-                            }
-                        } else if (taskManager.checkIdInTask(id)) {
-                            printMenuStatus();
-                            idProgress = Integer.parseInt(scanner.nextLine());
-                            if (idProgress == 1 || idProgress == 2) {
-                                taskManager.updateTask(id, idProgress);
-                            } else {
-                                System.out.println("Такого статуса нет!");
-                            }
+                    printMenuStatus();
+                    numberOfProgress = Integer.parseInt(scanner.nextLine());
+                    progress = setProgress(numberOfProgress);
+                    if (progress != null) {
+                        if (taskManager.checkIdInTask(id)) {
+                            Task task = taskManager.getTask(id);
+                            task.setProgress(progress);
+                        } else if (taskManager.checkIdSubtask(id)) {
+                            Subtask subtask = taskManager.getSubtask(id);
+                            subtask.setProgress(progress);
+                            taskManager.updateSubtask(subtask);
+                        } else {
+                            System.out.println("Невозможно изменить статус у данного номера!");
                         }
-                    } else {
-                        System.out.println("Список подзадач пуст!");
                     }
                     break;
-                case 10:
+                case 14:
                     return;
                 default:
                     System.out.println("Такого действия нет!");
@@ -115,18 +123,37 @@ public class Main {
         System.out.println("2. Добавить задачу");
         System.out.println("3. Добавить подзадачу Эпика");
         System.out.println("4. Распечатать все задачи");
-        System.out.println("5. Распечатать задачу или Эпик");
-        System.out.println("6. Распечатать подзадачи Эпика");
-        System.out.println("7. Очистить все задачи");
-        System.out.println("8. Удалить задачу по ID");
-        System.out.println("9. Обновить статус");
-        System.out.println("10. Выход");
+        System.out.println("5. Распечатать все Эпики");
+        System.out.println("6. Распечатать все подзадачи");
+        System.out.println("7. Распечатать задачу/Эпик/подзадачу по номеру");
+        System.out.println("8. Распечатать все подзадачи по номеру Эпика");
+        System.out.println("9. Удалить все задачи");
+        System.out.println("10. Удалить все Эпики");
+        System.out.println("11. Удалить все подзадачи");
+        System.out.println("12. Удалить задачу/Эпик/подзадачу по номеру");
+        System.out.println("13. Обновить статус");
+        System.out.println("14. Выход");
         System.out.println("--------------------");
     }
 
     public static void printMenuStatus() {
-        System.out.println("Введите номер нового статуса подзадачи: ");
-        System.out.println("1. IN_PROGRESS");
-        System.out.println("2. DONE");
+        System.out.println("Введите номер статуса задачи: ");
+        System.out.println("1. NEW");
+        System.out.println("2. IN_PROGRESS");
+        System.out.println("3. DONE");
+    }
+
+    public static Progress setProgress(int numberOfProgress) {
+        switch (numberOfProgress) {
+            case 1:
+                return Progress.NEW;
+            case 2:
+                return Progress.IN_PROGRESS;
+            case 3:
+                return Progress.DONE;
+            default:
+                System.out.println("Вы выбрали неверный статус задачи.");
+                return null;
+        }
     }
 }

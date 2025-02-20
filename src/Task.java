@@ -1,24 +1,27 @@
 import java.util.Objects;
 
 public class Task {
-    protected final int ID;
-    protected final String NAME;
-    protected final String DESCRIPTION;
-    protected Progress progress;
+    int id;
+    final String name;
+    final String description;
+    Progress progress;
 
-    public Task(String NAME, String DESCRIPTION, int ID) {
-        this.NAME = NAME;
-        this.DESCRIPTION = DESCRIPTION;
-        this.ID = ID;
-        this.progress = Progress.NEW;
+    public Task(String name, String description, Progress progress) {
+        this.name = name;
+        this.description = description;
+        this.progress = progress;
     }
 
-    public int getID() {
-        return ID;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void print() {
-        System.out.println(ID + ". Задача: " + NAME + "|\t Описание: " + DESCRIPTION + "|\t Статус: " + progress);
+        System.out.println(id + ". Задача: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
     }
 
     public void setProgress(Progress progress) {
@@ -29,11 +32,11 @@ public class Task {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(NAME, task.NAME) && Objects.equals(DESCRIPTION, task.DESCRIPTION);
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(NAME, DESCRIPTION);
+        return Objects.hashCode(id);
     }
 }
