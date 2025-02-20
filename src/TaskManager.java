@@ -5,8 +5,8 @@ import java.util.List;
 
 public final class TaskManager {
     static int allTaskCount = 0;
-    final HashMap<Integer, Task> taskMap = new HashMap<>();
-    final HashMap<Integer, Epic> epicMap = new HashMap<>();
+    private final HashMap<Integer, Task> taskMap = new HashMap<>();
+    private final HashMap<Integer, Epic> epicMap = new HashMap<>();
 
     public void printAllTask() {
         if (!taskMap.isEmpty()) {
@@ -99,7 +99,9 @@ public final class TaskManager {
             HashMap<Integer, Subtask> subtaskHashMap = epicMap.get(key).getSubtaskHashMap();
             if (!subtaskHashMap.isEmpty()) {
                 if (subtaskHashMap.containsKey(id)) {
+                    int idEpic = subtaskHashMap.get(id).getIdEpic();
                     subtaskHashMap.remove(id);
+                    updateEpic(idEpic);
                     return;
                 }
             }
@@ -141,15 +143,12 @@ public final class TaskManager {
     public int addTask(Task newTask) {
         boolean checkInclude = false;
         if (!taskMap.isEmpty()) {
-            for (Task task : taskMap.values()) {
-                if (task.equals(newTask)) {
-                    checkInclude = true;
-                    break;
-                }
+            Task task = taskMap.get(newTask.getId());
+            if (task != null) {
+                checkInclude = true;
             }
         }
         if (checkInclude) {
-            System.out.println("Такая задача уже существует!");
             return -1;
         } else {
             allTaskCount++;
@@ -159,47 +158,62 @@ public final class TaskManager {
         }
     }
 
-    public void addEpic(Epic newEpic) {
+    public int addEpic(Epic newEpic) {
         boolean checkInclude = false;
         if (!epicMap.isEmpty()) {
-            for (Epic epic : epicMap.values()) {
-                if (epic.equals(newEpic)) {
-                    checkInclude = true;
-                    break;
-                }
+            Epic epic = epicMap.get(newEpic.getId());
+            if (epic != null) {
+                checkInclude = true;
             }
         }
         if (checkInclude) {
-            System.out.println("Такой Эпик уже существует!");
+            return -1;
         } else {
             allTaskCount++;
             newEpic.setId(allTaskCount);
             epicMap.put(newEpic.getId(), newEpic);
+            return newEpic.getId();
         }
     }
 
-    public void addSubtask(Subtask newSubtask) {
+    public int addSubtask(Subtask newSubtask) {
         if (epicMap.containsKey(newSubtask.getIdEpic())) {
             Epic currentEpic = epicMap.get(newSubtask.getIdEpic());
             allTaskCount++;
             newSubtask.setId(allTaskCount);
             currentEpic.addSubtask(newSubtask);
             updateEpic(newSubtask.getIdEpic());
+            return newSubtask.getId();
         } else {
-            System.out.println("Данного Эпика нет в списке!");
+            return -1;
         }
-
     }
 
     public void updateEpic(int id) {
         HashMap<Integer, Subtask> subtaskHashMap = epicMap.get(id).getSubtaskHashMap();
+        if (subtaskHashMap.isEmpty()) {
+            epicMap.get(id).setProgress(Progress.NEW);
+        }
+        int countSubtaskDone = 0;
         for (Integer keySubtask : subtaskHashMap.keySet()) {
             if (subtaskHashMap.get(keySubtask).progress == Progress.IN_PROGRESS) {
-                epicMap.get(id).progress = Progress.IN_PROGRESS;
+                epicMap.get(id).setProgress(Progress.IN_PROGRESS);
                 return;
             }
             if (subtaskHashMap.get(keySubtask).progress == Progress.DONE) {
-                epicMap.get(id).progress = Progress.DONE;
+                countSubtaskDone++;
+                if (countSubtaskDone == subtaskHashMap.size()) {
+                    epicMap.get(id).setProgress(Progress.DONE);
+                    return;
+                } else {
+                    epicMap.get(id).setProgress(Progress.IN_PROGRESS);
+                }
+            } else if (subtaskHashMap.get(keySubtask).progress == Progress.NEW) {
+                if (countSubtaskDone == 0) {
+                    epicMap.get(id).setProgress(Progress.NEW);
+                } else if (countSubtaskDone > 0) {
+                    epicMap.get(id).setProgress(Progress.IN_PROGRESS);
+                }
             }
         }
     }

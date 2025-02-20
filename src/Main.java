@@ -20,7 +20,9 @@ public class Main {
                     System.out.print("Введите описание Эпика: ");
                     description = scanner.nextLine();
                     Epic newEpic = new Epic(name, description);
-                    taskManager.addEpic(newEpic);
+                    if (taskManager.addEpic(newEpic) > 0) {
+                        System.out.println("Добавлена задача под номером: " + newEpic.getId());
+                    }
                     break;
                 case 2:
                     System.out.print("Введите имя задачи: ");
@@ -34,6 +36,8 @@ public class Main {
                         Task newTask = new Task(name, description, progress);
                         if (taskManager.addTask(newTask) > 0) {
                             System.out.println("Добавлена задача под номером: " + newTask.getId());
+                        } else {
+                            System.out.println("Такая задача уже существует!");
                         }
                     }
                     break;
@@ -50,8 +54,13 @@ public class Main {
                         progress = setProgress(numberOfProgress);
                         if (progress != null) {
                             Subtask newSubtask = new Subtask(name, description, idEpic, progress);
-                            taskManager.addSubtask(newSubtask);
+                            if (taskManager.addSubtask(newSubtask) > 0) {
+                                System.out.println("Добавлена задача под номером: " + newSubtask.getId());
+                            } else {
+                                System.out.println("Такая подзадача уже существует!");
+                            }
                         }
+
                     } else {
                         System.out.println("Такого Эпика нет!");
                     }
