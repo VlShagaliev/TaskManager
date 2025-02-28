@@ -1,9 +1,11 @@
 import java.util.Scanner;
 
 public class Main {
+    static Managers managers = new Managers();
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = managers.getDefault();
         int command;
         while (true) {
             printMenu();
@@ -15,17 +17,18 @@ public class Main {
             command = Integer.parseInt(scanner.nextLine());
             switch (command) {
                 case 1:
-                    System.out.print("Введите имя Эпика: ");
+                    /*System.out.print("Введите имя Эпика: ");
                     name = scanner.nextLine();
                     System.out.print("Введите описание Эпика: ");
                     description = scanner.nextLine();
                     Epic newEpic = new Epic(name, description);
                     if (taskManager.addEpic(newEpic) > 0) {
                         System.out.println("Добавлена задача под номером: " + newEpic.getId());
-                    }
+                    }*/
+                    additionEpic(taskManager);
                     break;
                 case 2:
-                    System.out.print("Введите имя задачи: ");
+                    /*System.out.print("Введите имя задачи: ");
                     name = scanner.nextLine();
                     System.out.print("Введите описание задачи: ");
                     description = scanner.nextLine();
@@ -39,10 +42,11 @@ public class Main {
                         } else {
                             System.out.println("Такая задача уже существует!");
                         }
-                    }
+                    }*/
+                    additionTask(taskManager);
                     break;
                 case 3:
-                    System.out.print("Введите ID Эпика которому хотите добавить подзадачу: ");
+                    /*System.out.print("Введите ID Эпика которому хотите добавить подзадачу: ");
                     int idEpic = Integer.parseInt(scanner.nextLine());
                     if (taskManager.checkIdInEpic(idEpic)) {
                         System.out.print("Введите имя подзадачи: ");
@@ -63,7 +67,8 @@ public class Main {
 
                     } else {
                         System.out.println("Такого Эпика нет!");
-                    }
+                    }*/
+                    additionSubtask(taskManager);
                     break;
                 case 4:
                     taskManager.printAllTask();
@@ -101,23 +106,81 @@ public class Main {
                 case 13:
                     System.out.print("Введите номер задачи статус хоторой хотите обновить: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    printMenuStatus();
-                    numberOfProgress = Integer.parseInt(scanner.nextLine());
-                    progress = setProgress(numberOfProgress);
-                    if (progress != null) {
+                    System.out.print("Вы хотите обновить имя и описание задачи?: ");
+                    System.out.println("1.Да \n2.Нет");
+                    int replace = Integer.parseInt(scanner.nextLine());
+                    if (replace == 1) {
                         if (taskManager.checkIdInTask(id)) {
-                            Task task = taskManager.getTask(id);
-                            task.setProgress(progress);
+                            System.out.println("Введите новое имя задачи");
+                            name = scanner.nextLine();
+                            System.out.println("Введите новое описание задачи");
+                            description = scanner.nextLine();
+                            printMenuStatus();
+                            numberOfProgress = Integer.parseInt(scanner.nextLine());
+                            progress = setProgress(numberOfProgress);
+                            if (progress != null) {
+                                Task task = new Task(name, description, progress);
+                                task.setId(id);
+                                taskManager.updateTask(task);
+                            }
+                        } else if (taskManager.checkIdInEpic(id)) {
+                            System.out.println("Введите новое имя Эпика");
+                            name = scanner.nextLine();
+                            System.out.println("Введите новое описание Эпика");
+                            description = scanner.nextLine();
+                            Epic epic = new Epic(name, description);
+                            epic.setId(id);
+                            taskManager.updateEpic(epic);
                         } else if (taskManager.checkIdSubtask(id)) {
-                            Subtask subtask = taskManager.getSubtask(id);
-                            subtask.setProgress(progress);
-                            taskManager.updateSubtask(subtask);
+                            System.out.println("Введите новое имя подзадачи");
+                            name = scanner.nextLine();
+                            System.out.println("Введите новое описание подзадачи");
+                            description = scanner.nextLine();
+                            printMenuStatus();
+                            numberOfProgress = Integer.parseInt(scanner.nextLine());
+                            progress = setProgress(numberOfProgress);
+                            Subtask oldSubtask = (Subtask) taskManager.getSubtasks().get(id);
+                            if (progress != null) {
+                                Subtask subtask = new Subtask(name, description, oldSubtask.getIdEpic(), progress);
+                                subtask.setId(oldSubtask.getId());
+                                taskManager.updateSubtask(subtask);
+                            }
+                        } else {
+                            System.out.println("Такого действия нет!");
+                        }
+                    } else if (replace == 2) {
+                        if (taskManager.checkIdInTask(id)) {
+                            printMenuStatus();
+                            numberOfProgress = Integer.parseInt(scanner.nextLine());
+                            progress = setProgress(numberOfProgress);
+                            if (progress != null) {
+                                Task task = taskManager.getTasks().get(id);
+                                task.setProgress(progress);
+                                taskManager.updateTask(task);
+                            }
+                        } else if (taskManager.checkIdSubtask(id)) {
+                            printMenuStatus();
+                            numberOfProgress = Integer.parseInt(scanner.nextLine());
+                            progress = setProgress(numberOfProgress);
+                            if (progress != null) {
+                                Subtask subtask = (Subtask) taskManager.getSubtasks().get(id);
+                                subtask.setProgress(progress);
+                                taskManager.updateSubtask(subtask);
+                            }
                         } else {
                             System.out.println("Невозможно изменить статус у данного номера!");
                         }
+                    } else {
+                        System.out.println("Такого действия нет!");
                     }
                     break;
                 case 14:
+                    System.out.println("История просмотров: ");
+                    for (Task task : taskManager.getHistory()) {
+                        task.print();
+                    }
+                    break;
+                case 15:
                     return;
                 default:
                     System.out.println("Такого действия нет!");
@@ -141,7 +204,8 @@ public class Main {
         System.out.println("11. Удалить все подзадачи");
         System.out.println("12. Удалить задачу/Эпик/подзадачу по номеру");
         System.out.println("13. Обновить статус");
-        System.out.println("14. Выход");
+        System.out.println("14. Получичть историю");
+        System.out.println("15. Выход");
         System.out.println("--------------------");
     }
 
@@ -164,5 +228,44 @@ public class Main {
                 System.out.println("Вы выбрали неверный статус задачи.");
                 return null;
         }
+    }
+
+    private static void additionEpic(TaskManager taskManager) {
+        Epic epic = new Epic("1длоотываа", "1dkiu5d");
+        if (taskManager.addEpic(epic) > 0) {
+            System.out.println("Добавлена задача под номером: " + epic.getId());
+        }
+        epic = new Epic("2slkdnfbjb", "2kjsbdf");
+        if (taskManager.addEpic(epic) > 0) {
+            System.out.println("Добавлена задача под номером: " + epic.getId());
+        }
+        epic = new Epic("3sdkfjbrf", "3sdkjfb");
+        if (taskManager.addEpic(epic) > 0) {
+            System.out.println("Добавлена задача под номером: " + epic.getId());
+        }
+        epic = new Epic("4dfmg5", "4kjsdkfb");
+        if (taskManager.addEpic(epic) > 0) {
+            System.out.println("Добавлена задача под номером: " + epic.getId());
+        }
+    }
+
+    private static void additionTask(TaskManager taskManager) {
+        Task task = new Task("5sdfkjb45", "5kjsdfgjfb", Progress.NEW);
+        taskManager.addTask(task);
+        task = new Task("6afjhbsdf", "ksdfu4", Progress.IN_PROGRESS);
+        taskManager.addTask(task);
+        task = new Task("7sdkjbfbi4", "7sdfjbldsf", Progress.DONE);
+        taskManager.addTask(task);
+    }
+
+    private static void additionSubtask(TaskManager taskManager) {
+        Subtask subtask = new Subtask("8sdlknfb", "8aslkfb", 2, Progress.NEW);
+        taskManager.addSubtask(subtask);
+        subtask = new Subtask("9sdlknfb", "9aslkfb", 3, Progress.NEW);
+        taskManager.addSubtask(subtask);
+        subtask = new Subtask("10sdlknfb", "10aslkfb", 3, Progress.IN_PROGRESS);
+        taskManager.addSubtask(subtask);
+        subtask = new Subtask("11sdlknfb", "11aslkfb", 3, Progress.DONE);
+        taskManager.addSubtask(subtask);
     }
 }

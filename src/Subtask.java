@@ -13,6 +13,6 @@ public class Subtask extends Task {
 
     @Override
     public void print() {
-        System.out.println(id + ". Подзадача: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
+        System.out.println(id + " .Номер Эпика: " + idEpic + ". Подзадача: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
     }
 }

@@ -23,20 +23,5 @@ public class Epic extends Task {
 
     public void print() {
         System.out.println(id + ". Эпик: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
-        System.out.print("\tСписок подзадач: ");
-        printSubtask();
-    }
-
-    public void printSubtask() {
-        if (!subtaskHashMap.isEmpty()) {
-            System.out.println("\n\t--------------------");
-            for (Integer key : subtaskHashMap.keySet()) {
-                System.out.print("\t");
-                subtaskHashMap.get(key).print();
-            }
-            System.out.println("\t--------------------");
-        } else {
-            System.out.println("Список пуст!");
-        }
     }
 }
