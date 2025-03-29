@@ -47,10 +47,10 @@ class InMemoryTaskManagerTest {
         Subtask subtask = new Subtask("2", "2", 1, Progress.NEW);
         subtask.setId(2);
         taskManager.addSubtask(subtask);
-        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(2);
+        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(0);
         subtask1.setProgress(Progress.IN_PROGRESS);
         taskManager.updateSubtask(subtask1);
-        Assertions.assertEquals(taskManager.getEpics().get(1).progress, Progress.IN_PROGRESS);
+        Assertions.assertEquals(taskManager.getEpics().get(0).progress, Progress.IN_PROGRESS);
     }
 
     @Test
@@ -62,10 +62,10 @@ class InMemoryTaskManagerTest {
         Subtask subtask = new Subtask("2", "2", 1, Progress.NEW);
         subtask.setId(2);
         taskManager.addSubtask(subtask);
-        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(2);
+        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(0);
         subtask1.setProgress(Progress.DONE);
         taskManager.updateSubtask(subtask1);
-        Assertions.assertEquals(taskManager.getEpics().get(1).progress, Progress.DONE);
+        Assertions.assertEquals(taskManager.getEpics().get(0).progress, Progress.DONE);
     }
 
     @Test
@@ -77,10 +77,10 @@ class InMemoryTaskManagerTest {
         Subtask subtask = new Subtask("2", "2", 1, Progress.NEW);
         subtask.setId(2);
         taskManager.addSubtask(subtask);
-        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(2);
+        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(0);
         subtask1.setProgress(Progress.DONE);
         taskManager.clearSubtask();
-        Assertions.assertEquals(taskManager.getEpics().get(1).progress, Progress.NEW);
+        Assertions.assertEquals(taskManager.getEpics().get(0).progress, Progress.NEW);
     }
 
     @Test
@@ -89,9 +89,9 @@ class InMemoryTaskManagerTest {
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
         taskManager.addTask(task);
-        Task task1 = taskManager.getTasks().get(1);
+        Task task1 = taskManager.getTasks().get(0);
         task1.setProgress(Progress.DONE);
-        Assertions.assertEquals(taskManager.getTasks().get(1).progress, Progress.DONE);
+        Assertions.assertEquals(taskManager.getTasks().get(0).progress, Progress.DONE);
     }
 
     @Test
@@ -103,10 +103,10 @@ class InMemoryTaskManagerTest {
         Subtask subtask = new Subtask("2", "2", 1, Progress.NEW);
         subtask.setId(2);
         taskManager.addSubtask(subtask);
-        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(2);
+        Subtask subtask1 = (Subtask) taskManager.getSubtasks().get(0);
         subtask1.setProgress(Progress.DONE);
         taskManager.updateSubtask(subtask1);
-        Assertions.assertEquals(taskManager.getSubtasks().get(1).progress, Progress.DONE);
+        Assertions.assertEquals(taskManager.getSubtasks().get(0).progress, Progress.DONE);
     }
 
     @Test
@@ -126,7 +126,7 @@ class InMemoryTaskManagerTest {
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
         taskManager.addTask(task);
-        Assertions.assertNotNull(taskManager.getTasks().get(1));
+        Assertions.assertNotNull(taskManager.getTasks().get(0));
     }
 
     @Test
