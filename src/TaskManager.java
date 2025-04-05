@@ -59,4 +59,6 @@ public interface TaskManager {
     boolean checkIdSubtask(int id);
 
     List<Task> getHistory();
+
+    HistoryManager getHistoryManager();
 }

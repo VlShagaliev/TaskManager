@@ -181,6 +181,11 @@ public class Main {
                     }
                     break;
                 case 15:
+                    System.out.print("Введите номер истории которую хотите удалить: ");
+                    id = Integer.parseInt(scanner.nextLine());
+                    taskManager.getHistoryManager().remove(id);
+                    break;
+                case 16:
                     return;
                 default:
                     System.out.println("Такого действия нет!");
@@ -204,8 +209,9 @@ public class Main {
         System.out.println("11. Удалить все подзадачи");
         System.out.println("12. Удалить задачу/Эпик/подзадачу по номеру");
         System.out.println("13. Обновить статус");
-        System.out.println("14. Получичть историю");
-        System.out.println("15. Выход");
+        System.out.println("14. Получить историю");
+        System.out.println("15. Удалить историю по номеру");
+        System.out.println("16. Выход");
         System.out.println("--------------------");
     }
 
