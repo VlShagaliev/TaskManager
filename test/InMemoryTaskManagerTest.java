@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class InMemoryTaskManagerTest {
 
@@ -143,4 +144,37 @@ class InMemoryTaskManagerTest {
         Assertions.assertTrue(checkDifferent);
     }
 
+    @Test
+    void testHistoryReplaceTaskChecked(){
+        TaskManager taskManager = new InMemoryTaskManager();
+        Task task = new Task("1", "1", Progress.NEW);
+        task.setId(1);
+        taskManager.addTask(task);
+        taskManager.printById(1);
+        task = new Task("2", "2", Progress.NEW);
+        task.setId(2);
+        taskManager.addTask(task);
+        taskManager.printById(2);
+        List<Task> previousHistory = new ArrayList<>(taskManager.getHistory());
+        taskManager.printById(1);
+        List<Task> newHistory = new ArrayList<>(taskManager.getHistory());
+        Assertions.assertNotEquals(previousHistory,newHistory);
+    }
+
+    @Test
+    void testHistoryRemovedTaskById(){
+        TaskManager taskManager = new InMemoryTaskManager();
+        Task task = new Task("1", "1", Progress.NEW);
+        task.setId(1);
+        taskManager.addTask(task);
+        taskManager.printById(1);
+        task = new Task("2", "2", Progress.NEW);
+        task.setId(2);
+        taskManager.addTask(task);
+        taskManager.printById(2);
+        List<Task> previousHistory = new ArrayList<>(taskManager.getHistory());
+        taskManager.getHistoryManager().remove(1);
+        List<Task> newHistory = new ArrayList<>(taskManager.getHistory());
+        Assertions.assertNotEquals(previousHistory,newHistory);
+    }
 }

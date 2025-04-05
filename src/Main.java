@@ -6,6 +6,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = managers.getDefault();
+        HistoryManager historyManager = taskManager.getHistoryManager();
         int command;
         while (true) {
             printMenu();
@@ -82,29 +83,62 @@ public class Main {
                 case 7:
                     System.out.print("Введите ID задачи/Эпика/подзадачи которую хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    taskManager.printById(id);
+                    if (taskManager.checkIdSubtask(id) || taskManager.checkIdInEpic(id) || taskManager.checkIdInTask(id)) {
+                        taskManager.printById(id);
+                    } else {
+                        System.out.println("Такой задачи/Эпика/подзадачи нет!");
+                    }
                     break;
                 case 8:
                     System.out.print("Введите ID Эпика подзадачи которого хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    taskManager.printSubtaskByIdEpic(id);
+                    if (taskManager.checkIdSubtask(id)) {
+                        taskManager.printSubtaskByIdEpic(id);
+                    } else {
+                        System.out.println("Такого Эпика нет!");
+                    }
                     break;
                 case 9:
+                    for (Task task : taskManager.getTasks()) {
+                        int idTask = task.getId();
+                        for (Task taskHistory : historyManager.getHistory()) {
+                            if (taskHistory.getId() == idTask) {
+                                historyManager.remove(idTask);
+                            }
+                        }
+                    }
                     taskManager.clearTask();
                     break;
                 case 10:
+                    for (Task epic : taskManager.getEpics()) {
+                        int idEpic = epic.getId();
+                        for (Task taskHistory : historyManager.getHistory()) {
+                            if (taskHistory.getId() == idEpic) {
+                                historyManager.remove(idEpic);
+                            }
+                        }
+                    }
                     taskManager.clearEpic();
                     break;
                 case 11:
+                    for (Task subtask : taskManager.getSubtasks()) {
+                        int idSubtask = subtask.getId();
+                        for (Task taskHistory : historyManager.getHistory()) {
+                            if (taskHistory.getId() == idSubtask) {
+                                historyManager.remove(idSubtask);
+                            }
+                        }
+                    }
                     taskManager.clearSubtask();
                     break;
                 case 12:
                     System.out.print("Введите ID: ");
                     id = Integer.parseInt(scanner.nextLine());
                     taskManager.deleteById(id);
+                    historyManager.remove(id);
                     break;
                 case 13:
-                    System.out.print("Введите номер задачи статус хоторой хотите обновить: ");
+                    System.out.print("Введите номер задачи статус которой хотите обновить: ");
                     id = Integer.parseInt(scanner.nextLine());
                     System.out.print("Вы хотите обновить имя и описание задачи?: ");
                     System.out.println("1.Да \n2.Нет");
@@ -175,15 +209,19 @@ public class Main {
                     }
                     break;
                 case 14:
-                    System.out.println("История просмотров: ");
-                    for (Task task : taskManager.getHistory()) {
-                        task.print();
+                    if (!taskManager.getHistory().isEmpty()) {
+                        System.out.println("История просмотров: ");
+                        for (Task task : taskManager.getHistory()) {
+                            task.print();
+                        }
+                    } else {
+                        System.out.println("История просмотров пуста!");
                     }
                     break;
                 case 15:
                     System.out.print("Введите номер истории которую хотите удалить: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    taskManager.getHistoryManager().remove(id);
+                    historyManager.remove(id);
                     break;
                 case 16:
                     return;

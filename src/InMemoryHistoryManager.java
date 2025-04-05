@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final DoublyLinkedList<Task> historyLinkedList = new DoublyLinkedList<>();
+    private DoublyLinkedList<Task> historyLinkedList = new DoublyLinkedList<>();
     private final HashMap<Integer, Node<Task>> mapHistory = new HashMap<>();
 
     @Override
@@ -21,8 +21,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (mapHistory.get(id) != null) {
             Node<Task> taskNode = mapHistory.get(id);
             removeNode(taskNode);
-        } else {
-            System.out.println("Данной задачи в истории нет!");
+            mapHistory.remove(id);
         }
     }
 
@@ -56,5 +55,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         return historyLinkedList.getTasks();
+    }
+
+    @Override
+    public void clearHistory() {
+        mapHistory.clear();
+        historyLinkedList = new DoublyLinkedList<>();
     }
 }
