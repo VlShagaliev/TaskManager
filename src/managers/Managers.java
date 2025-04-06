@@ -1,3 +1,6 @@
+package managers;
+import model.*;
+
 public class Managers {
 
     public static HistoryManager getDefaultHistory(){

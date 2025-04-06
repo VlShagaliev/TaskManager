@@ -1,3 +1,7 @@
+package model;
+
+import managers.HistoryManager;
+
 import java.util.List;
 
 public interface TaskManager {

@@ -1,5 +1,9 @@
+package managers;
+
 import java.util.HashMap;
 import java.util.List;
+import model.*;
+import model.DoublyLinkedList;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private DoublyLinkedList<Task> historyLinkedList = new DoublyLinkedList<>();
@@ -18,10 +22,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if (mapHistory.get(id) != null) {
-            Node<Task> taskNode = mapHistory.get(id);
+        Node<Task> taskNode = mapHistory.remove(id);
+        if (taskNode != null) {
             removeNode(taskNode);
-            mapHistory.remove(id);
         }
     }
 

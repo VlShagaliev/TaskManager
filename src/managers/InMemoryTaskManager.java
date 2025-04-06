@@ -1,7 +1,10 @@
+package managers;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import model.*;
 
 public final class InMemoryTaskManager implements TaskManager {
     static int allTaskCount = 0;
@@ -76,24 +79,51 @@ public final class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTask() {
+        for (Task task : getTasks()) {
+            int idTask = task.getId();
+            for (Task taskHistory : historyManager.getHistory()) {
+                if (taskHistory.getId() == idTask) {
+                    historyManager.remove(idTask);
+                }
+            }
+        }
         taskMap.clear();
     }
 
     @Override
     public void clearEpic() {
+        for (Task epic : getEpics()) {
+            int idEpic = epic.getId();
+            for (Task taskHistory : historyManager.getHistory()) {
+                if (taskHistory.getId() == idEpic) {
+                    historyManager.remove(idEpic);
+                }
+            }
+        }
         epicMap.clear();
     }
 
     @Override
     public void clearSubtask() {
-        if (!epicMap.isEmpty())
+        for (Task subtask : getSubtasks()) {
+            int idSubtask = subtask.getId();
+            for (Task taskHistory : historyManager.getHistory()) {
+                if (taskHistory.getId() == idSubtask) {
+                    historyManager.remove(idSubtask);
+                }
+            }
+        }
+        if (!epicMap.isEmpty()) {
             for (Integer key : epicMap.keySet()) {
                 epicMap.get(key).getSubtaskHashMap().clear();
             }
+        }
+
     }
 
     @Override
     public void deleteTaskById(int id) {
+        historyManager.remove(id);
         taskMap.remove(id);
     }
 
@@ -220,11 +250,11 @@ public final class InMemoryTaskManager implements TaskManager {
         }
         int countSubtaskDone = 0;
         for (Integer keySubtask : subtaskHashMap.keySet()) {
-            if (subtaskHashMap.get(keySubtask).progress == Progress.IN_PROGRESS) {
+            if (subtaskHashMap.get(keySubtask).getProgress() == Progress.IN_PROGRESS) {
                 epic.setProgress(Progress.IN_PROGRESS);
                 return;
             }
-            if (subtaskHashMap.get(keySubtask).progress == Progress.DONE) {
+            if (subtaskHashMap.get(keySubtask).getProgress() == Progress.DONE) {
                 countSubtaskDone++;
                 if (countSubtaskDone == subtaskHashMap.size()) {
                     epic.setProgress(Progress.DONE);
@@ -232,7 +262,7 @@ public final class InMemoryTaskManager implements TaskManager {
                 } else {
                     epic.setProgress(Progress.IN_PROGRESS);
                 }
-            } else if (subtaskHashMap.get(keySubtask).progress == Progress.NEW) {
+            } else if (subtaskHashMap.get(keySubtask).getProgress() == Progress.NEW) {
                 if (countSubtaskDone == 0) {
                     epic.setProgress(Progress.NEW);
                 } else if (countSubtaskDone > 0) {

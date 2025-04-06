@@ -1,9 +1,11 @@
+package model;
+
 import java.util.ArrayList;
+import managers.*;
 
 public class DoublyLinkedList<T> {
     public Node<T> head;
     public Node<T> tail;
-    private int size = 0;
 
     public void linkLast(Node<T> newNode){
         if (head == null){
@@ -18,7 +20,6 @@ public class DoublyLinkedList<T> {
                 tail.prev = head;
             }
         }
-        size++;
     }
 
     public ArrayList<T> getTasks(){

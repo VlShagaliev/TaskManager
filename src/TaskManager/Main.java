@@ -1,3 +1,9 @@
+package TaskManager;
+
+import managers.HistoryManager;
+import managers.Managers;
+import model.*;
+
 import java.util.Scanner;
 
 public class Main {
@@ -22,7 +28,7 @@ public class Main {
                     name = scanner.nextLine();
                     System.out.print("Введите описание Эпика: ");
                     description = scanner.nextLine();
-                    Epic newEpic = new Epic(name, description);
+                    model.Epic newEpic = new model.Epic(name, description);
                     if (taskManager.addEpic(newEpic) > 0) {
                         System.out.println("Добавлена задача под номером: " + newEpic.getId());
                     }*/
@@ -37,7 +43,7 @@ public class Main {
                     numberOfProgress = Integer.parseInt(scanner.nextLine());
                     progress = setProgress(numberOfProgress);
                     if (progress != null) {
-                        Task newTask = new Task(name, description, progress);
+                        model.Task newTask = new model.Task(name, description, progress);
                         if (taskManager.addTask(newTask) > 0) {
                             System.out.println("Добавлена задача под номером: " + newTask.getId());
                         } else {
@@ -58,7 +64,7 @@ public class Main {
                         numberOfProgress = Integer.parseInt(scanner.nextLine());
                         progress = setProgress(numberOfProgress);
                         if (progress != null) {
-                            Subtask newSubtask = new Subtask(name, description, idEpic, progress);
+                            model.Subtask newSubtask = new model.Subtask(name, description, idEpic, progress);
                             if (taskManager.addSubtask(newSubtask) > 0) {
                                 System.out.println("Добавлена задача под номером: " + newSubtask.getId());
                             } else {
@@ -99,43 +105,18 @@ public class Main {
                     }
                     break;
                 case 9:
-                    for (Task task : taskManager.getTasks()) {
-                        int idTask = task.getId();
-                        for (Task taskHistory : historyManager.getHistory()) {
-                            if (taskHistory.getId() == idTask) {
-                                historyManager.remove(idTask);
-                            }
-                        }
-                    }
                     taskManager.clearTask();
                     break;
                 case 10:
-                    for (Task epic : taskManager.getEpics()) {
-                        int idEpic = epic.getId();
-                        for (Task taskHistory : historyManager.getHistory()) {
-                            if (taskHistory.getId() == idEpic) {
-                                historyManager.remove(idEpic);
-                            }
-                        }
-                    }
                     taskManager.clearEpic();
                     break;
                 case 11:
-                    for (Task subtask : taskManager.getSubtasks()) {
-                        int idSubtask = subtask.getId();
-                        for (Task taskHistory : historyManager.getHistory()) {
-                            if (taskHistory.getId() == idSubtask) {
-                                historyManager.remove(idSubtask);
-                            }
-                        }
-                    }
                     taskManager.clearSubtask();
                     break;
                 case 12:
                     System.out.print("Введите ID: ");
                     id = Integer.parseInt(scanner.nextLine());
                     taskManager.deleteById(id);
-                    historyManager.remove(id);
                     break;
                 case 13:
                     System.out.print("Введите номер задачи статус которой хотите обновить: ");

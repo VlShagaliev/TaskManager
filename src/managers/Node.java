@@ -1,4 +1,6 @@
-class Node <T> {
+package managers;
+
+public class Node <T> {
 
     public T data;
     public Node<T> next;

@@ -1,6 +1,20 @@
+package model;
+
 import java.util.Objects;
 
 public class Task {
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Progress getProgress() {
+        return progress;
+    }
+
     protected int id;
     protected final String name;
     protected final String description;
