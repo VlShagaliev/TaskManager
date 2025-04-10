@@ -1,3 +1,7 @@
+package model;
+
+import managers.HistoryManager;
+
 import java.util.List;
 
 public interface TaskManager {
@@ -59,4 +63,6 @@ public interface TaskManager {
     boolean checkIdSubtask(int id);
 
     List<Task> getHistory();
+
+    HistoryManager getHistoryManager();
 }

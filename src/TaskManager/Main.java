@@ -1,3 +1,9 @@
+package TaskManager;
+
+import managers.HistoryManager;
+import managers.Managers;
+import model.*;
+
 import java.util.Scanner;
 
 public class Main {
@@ -6,6 +12,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = managers.getDefault();
+        HistoryManager historyManager = taskManager.getHistoryManager();
         int command;
         while (true) {
             printMenu();
@@ -21,7 +28,7 @@ public class Main {
                     name = scanner.nextLine();
                     System.out.print("Введите описание Эпика: ");
                     description = scanner.nextLine();
-                    Epic newEpic = new Epic(name, description);
+                    model.Epic newEpic = new model.Epic(name, description);
                     if (taskManager.addEpic(newEpic) > 0) {
                         System.out.println("Добавлена задача под номером: " + newEpic.getId());
                     }*/
@@ -36,7 +43,7 @@ public class Main {
                     numberOfProgress = Integer.parseInt(scanner.nextLine());
                     progress = setProgress(numberOfProgress);
                     if (progress != null) {
-                        Task newTask = new Task(name, description, progress);
+                        model.Task newTask = new model.Task(name, description, progress);
                         if (taskManager.addTask(newTask) > 0) {
                             System.out.println("Добавлена задача под номером: " + newTask.getId());
                         } else {
@@ -57,7 +64,7 @@ public class Main {
                         numberOfProgress = Integer.parseInt(scanner.nextLine());
                         progress = setProgress(numberOfProgress);
                         if (progress != null) {
-                            Subtask newSubtask = new Subtask(name, description, idEpic, progress);
+                            model.Subtask newSubtask = new model.Subtask(name, description, idEpic, progress);
                             if (taskManager.addSubtask(newSubtask) > 0) {
                                 System.out.println("Добавлена задача под номером: " + newSubtask.getId());
                             } else {
@@ -82,12 +89,20 @@ public class Main {
                 case 7:
                     System.out.print("Введите ID задачи/Эпика/подзадачи которую хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    taskManager.printById(id);
+                    if (taskManager.checkIdSubtask(id) || taskManager.checkIdInEpic(id) || taskManager.checkIdInTask(id)) {
+                        taskManager.printById(id);
+                    } else {
+                        System.out.println("Такой задачи/Эпика/подзадачи нет!");
+                    }
                     break;
                 case 8:
                     System.out.print("Введите ID Эпика подзадачи которого хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    taskManager.printSubtaskByIdEpic(id);
+                    if (taskManager.checkIdSubtask(id)) {
+                        taskManager.printSubtaskByIdEpic(id);
+                    } else {
+                        System.out.println("Такого Эпика нет!");
+                    }
                     break;
                 case 9:
                     taskManager.clearTask();
@@ -104,7 +119,7 @@ public class Main {
                     taskManager.deleteById(id);
                     break;
                 case 13:
-                    System.out.print("Введите номер задачи статус хоторой хотите обновить: ");
+                    System.out.print("Введите номер задачи статус которой хотите обновить: ");
                     id = Integer.parseInt(scanner.nextLine());
                     System.out.print("Вы хотите обновить имя и описание задачи?: ");
                     System.out.println("1.Да \n2.Нет");
@@ -175,12 +190,21 @@ public class Main {
                     }
                     break;
                 case 14:
-                    System.out.println("История просмотров: ");
-                    for (Task task : taskManager.getHistory()) {
-                        task.print();
+                    if (!taskManager.getHistory().isEmpty()) {
+                        System.out.println("История просмотров: ");
+                        for (Task task : taskManager.getHistory()) {
+                            task.print();
+                        }
+                    } else {
+                        System.out.println("История просмотров пуста!");
                     }
                     break;
                 case 15:
+                    System.out.print("Введите номер истории которую хотите удалить: ");
+                    id = Integer.parseInt(scanner.nextLine());
+                    historyManager.remove(id);
+                    break;
+                case 16:
                     return;
                 default:
                     System.out.println("Такого действия нет!");
@@ -204,8 +228,9 @@ public class Main {
         System.out.println("11. Удалить все подзадачи");
         System.out.println("12. Удалить задачу/Эпик/подзадачу по номеру");
         System.out.println("13. Обновить статус");
-        System.out.println("14. Получичть историю");
-        System.out.println("15. Выход");
+        System.out.println("14. Получить историю");
+        System.out.println("15. Удалить историю по номеру");
+        System.out.println("16. Выход");
         System.out.println("--------------------");
     }
 
