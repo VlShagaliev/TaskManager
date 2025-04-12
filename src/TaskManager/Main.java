@@ -1,18 +1,23 @@
 package TaskManager;
 
+import FileBackedTaskManager.FileBackedTaskManager;
 import managers.HistoryManager;
 import managers.Managers;
 import model.*;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class Main {
     static Managers managers = new Managers();
+    static TaskManager taskManager = managers.getDefault();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = managers.getDefault();
         HistoryManager historyManager = taskManager.getHistoryManager();
+        File file = new File("Backup.csv");
+        taskManager = loadFromFile(file);
         int command;
         while (true) {
             printMenu();
@@ -292,5 +297,27 @@ public class Main {
         taskManager.addSubtask(subtask);
         subtask = new Subtask("11sdlknfb", "11aslkfb", 3, Progress.DONE);
         taskManager.addSubtask(subtask);
+    }
+
+    static FileBackedTaskManager loadFromFile(File file) throws IOException {
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+        try (FileReader fileReader = new FileReader(file, StandardCharsets.UTF_8); BufferedReader reader = new BufferedReader(fileReader)) {
+            reader.readLine();
+            while (reader.ready()) {
+                Task task = fileBackedTaskManager.fromString(reader.readLine());
+                if (task instanceof Epic) {
+                    taskManager.addEpic((Epic) task);
+                } else if (task instanceof Subtask) {
+                    taskManager.addSubtask((Subtask) task);
+                } else if (task instanceof Task) {
+                    taskManager.addTask(task);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл не найден");
+        } catch (IOException e) {
+            System.out.println("Ошибка чтения файла");
+        }
+        return fileBackedTaskManager;
     }
 }

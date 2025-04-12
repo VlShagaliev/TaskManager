@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import model.*;
 
-public final class InMemoryTaskManager implements TaskManager {
+public class InMemoryTaskManager implements TaskManager {
     static int allTaskCount = 0;
-    private final Map<Integer, Task> taskMap = new HashMap<>();
-    private final Map<Integer, Epic> epicMap = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected static final Map<Integer, Task> taskMap = new HashMap<>();
+    protected static final Map<Integer, Epic> epicMap = new HashMap<>();
+    protected final static HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public void printAllTask() {
