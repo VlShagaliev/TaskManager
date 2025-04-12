@@ -1,4 +1,4 @@
-import FileBackedTaskManager.FileBackedTaskManager;
+import fileBackedTaskManager.FileBackedTaskManager;
 import model.Progress;
 import model.Task;
 import model.TaskManager;
@@ -9,11 +9,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class FileBackedTaskManagerTest {
     @Test
-    void createFileTest() throws IOException {
+    void createFileTest() throws IOException, FileBackedTaskManager.ManagerSaveException {
         File file = File.createTempFile("Backup","csv");
         TaskManager taskManager = new FileBackedTaskManager(file);
         Task task = new Task("1", "1", Progress.NEW);
@@ -26,7 +25,7 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    void fileIsNotEmptyTest() throws IOException{
+    void fileIsNotEmptyTest() throws IOException, FileBackedTaskManager.ManagerSaveException {
         File file = File.createTempFile("Backup","csv");
         TaskManager taskManager = new FileBackedTaskManager(file);
         Task task = new Task("1", "1", Progress.NEW);
@@ -45,7 +44,7 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    void loadFromFileTest() throws IOException{
+    void loadFromFileTest() throws IOException, FileBackedTaskManager.ManagerSaveException {
         File file = File.createTempFile("Backup","csv");
         TaskManager taskManager = new FileBackedTaskManager(file);
         Task task = new Task("1", "1", Progress.NEW);

@@ -1,3 +1,4 @@
+import fileBackedTaskManager.FileBackedTaskManager;
 import managers.InMemoryTaskManager;
 import managers.Managers;
 import model.*;
@@ -10,7 +11,7 @@ import java.util.List;
 class InMemoryTaskManagerTest {
 
     @Test
-    void clearTask() {
+    void clearTask() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
@@ -20,7 +21,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void clearEpic() {
+    void clearEpic() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Epic epic = new Epic("1", "1");
         epic.setId(1);
@@ -30,7 +31,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void clearSubtask() {
+    void clearSubtask() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Epic epic = new Epic("1", "1");
         epic.setId(1);
@@ -43,7 +44,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateEpicStatusInProgress() {
+    void updateEpicStatusInProgress() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Epic epic = new Epic("1", "1");
         epic.setId(1);
@@ -58,7 +59,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateEpicStatusDone() {
+    void updateEpicStatusDone() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Epic epic = new Epic("1", "1");
         epic.setId(1);
@@ -73,7 +74,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateEpicStatusAfterClearSubtask() {
+    void updateEpicStatusAfterClearSubtask() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Epic epic = new Epic("1", "1");
         epic.setId(1);
@@ -88,7 +89,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateTask() {
+    void updateTask() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
@@ -99,7 +100,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateSubtask() {
+    void updateSubtask() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Epic epic = new Epic("1", "1");
         epic.setId(1);
@@ -125,7 +126,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testFindTaskById() {
+    void testFindTaskById() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
@@ -134,7 +135,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testHistorySavePreviousVersionTask() {
+    void testHistorySavePreviousVersionTask() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
@@ -148,7 +149,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testHistoryReplaceTaskChecked(){
+    void testHistoryReplaceTaskChecked() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
@@ -165,7 +166,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testHistoryRemovedTaskById(){
+    void testHistoryRemovedTaskById() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
         task.setId(1);
