@@ -103,7 +103,7 @@ public class Main {
                 case 8:
                     System.out.print("Введите ID Эпика подзадачи которого хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    if (taskManager.checkIdSubtask(id)) {
+                    if (taskManager.checkIdInEpic(id)) {
                         taskManager.printSubtaskByIdEpic(id);
                     } else {
                         System.out.println("Такого Эпика нет!");

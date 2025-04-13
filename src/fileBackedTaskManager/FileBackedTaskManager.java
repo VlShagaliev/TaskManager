@@ -5,6 +5,7 @@ import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -15,81 +16,124 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public int addSubtask(Subtask subtask) throws ManagerSaveException {
+    public int addSubtask(Subtask subtask) {
         int id = super.addSubtask(subtask);
         if (id == -1) {
             System.out.println("Эпика для данной задачи нет!");
             return -1;
         }
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
         return id;
     }
 
     @Override
-    public void updateEpicStatus(int id) throws ManagerSaveException {
+    public void updateEpicStatus(int id) {
         super.updateEpicStatus(id);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void updateTask(Task task) throws ManagerSaveException {
+    public void updateTask(Task task) {
         super.updateTask(task);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void updateEpic(Epic epic) throws ManagerSaveException {
+    public void updateEpic(Epic epic) {
         super.updateEpic(epic);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) throws ManagerSaveException {
+    public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void deleteTaskById(int id) throws ManagerSaveException {
+    public void deleteTaskById(int id) {
         super.deleteTaskById(id);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void deleteEpicById(int id) throws ManagerSaveException {
+    public void deleteEpicById(int id) {
         super.deleteEpicById(id);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void deleteSubtaskById(int id) throws ManagerSaveException {
+    public void deleteSubtaskById(int id) {
         super.deleteSubtaskById(id);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public void deleteById(int id) throws ManagerSaveException {
+    public void deleteById(int id) {
         super.deleteById(id);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
-    public int addTask(Task task) throws ManagerSaveException {
+    public int addTask(Task task) {
         int id = super.addTask(task);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
         return id;
     }
 
     @Override
-    public int addEpic(Epic epic) throws ManagerSaveException {
+    public int addEpic(Epic epic) {
         int id = super.addEpic(epic);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
+        }
         return id;
     }
 
 
-
-    public void save() throws ManagerSaveException {
+    public void save() {
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8); BufferedWriter writer = new BufferedWriter(fileWriter)) {
             writer.write("id,type,name,status,description,epic");
             writer.newLine();
@@ -170,21 +214,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             while (reader.ready()) {
                 Task task = fileBackedTaskManager.fromString(reader.readLine());
                 if (task instanceof Epic) {
-                    fileBackedTaskManager.addEpic((Epic) task);
+                    fileBackedTaskManager.epicMap.put(task.getId(), (Epic) task);
+                    //fileBackedTaskManager.addEpic((Epic) task);
                 } else if (task instanceof Subtask) {
-                    fileBackedTaskManager.addSubtask((Subtask) task);
+                    HashMap<Integer, Subtask> subtaskHashMap = fileBackedTaskManager.epicMap.get(((Subtask) task).getIdEpic()).getSubtaskHashMap();
+                    subtaskHashMap.put(task.getId(), (Subtask) task);
+                    //fileBackedTaskManager.addSubtask((Subtask) task);
                 } else {
-                    fileBackedTaskManager.addTask(task);
+                    fileBackedTaskManager.taskMap.put(task.getId(), task);
+                    //fileBackedTaskManager.addTask(task);
                 }
             }
         } catch (IOException e) {
-            System.out.println("Файл не найден");
-        } catch (ManagerSaveException e) {
-            System.out.println("Непредвиденная ошибка");
+            throw new ManagerSaveException();
         }
         return fileBackedTaskManager;
     }
 
-    public class ManagerSaveException extends Exception {
+    public static class ManagerSaveException extends RuntimeException {
+
     }
 }

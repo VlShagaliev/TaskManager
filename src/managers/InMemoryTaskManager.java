@@ -1,12 +1,11 @@
 package managers;
 
+import model.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import fileBackedTaskManager.FileBackedTaskManager;
-import model.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -125,18 +124,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTaskById(int id) throws FileBackedTaskManager.ManagerSaveException {
+    public void deleteTaskById(int id)  {
         historyManager.remove(id);
         taskMap.remove(id);
     }
 
     @Override
-    public void deleteEpicById(int id) throws FileBackedTaskManager.ManagerSaveException {
+    public void deleteEpicById(int id)  {
         epicMap.remove(id);
     }
 
     @Override
-    public void deleteSubtaskById(int id) throws FileBackedTaskManager.ManagerSaveException {
+    public void deleteSubtaskById(int id)  {
         for (Integer key : epicMap.keySet()) {
             Map<Integer, Subtask> subtaskHashMap = epicMap.get(key).getSubtaskHashMap();
             if (!subtaskHashMap.isEmpty()) {
@@ -151,7 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteById(int id) throws FileBackedTaskManager.ManagerSaveException {
+    public void deleteById(int id)  {
         if (checkIdInTask(id)) {
             deleteTaskById(id);
             return;
@@ -193,7 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addTask(Task newTask) throws FileBackedTaskManager.ManagerSaveException {
+    public int addTask(Task newTask)  {
         boolean checkInclude = false;
         if (!taskMap.isEmpty()) {
             Task task = taskMap.get(newTask.getId());
@@ -212,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addEpic(Epic newEpic) throws FileBackedTaskManager.ManagerSaveException {
+    public int addEpic(Epic newEpic)  {
         boolean checkInclude = false;
         if (!epicMap.isEmpty()) {
             Epic epic = epicMap.get(newEpic.getId());
@@ -231,7 +230,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addSubtask(Subtask newSubtask) throws FileBackedTaskManager.ManagerSaveException {
+    public int addSubtask(Subtask newSubtask) {
         if (epicMap.containsKey(newSubtask.getIdEpic())) {
             Epic currentEpic = epicMap.get(newSubtask.getIdEpic());
             allTaskCount++;
@@ -245,7 +244,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpicStatus(int id) throws FileBackedTaskManager.ManagerSaveException {
+    public void updateEpicStatus(int id)  {
         HashMap<Integer, Subtask> subtaskHashMap = epicMap.get(id).getSubtaskHashMap();
         Epic epic = epicMap.get(id);
         if (subtaskHashMap.isEmpty()) {
@@ -276,12 +275,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) throws FileBackedTaskManager.ManagerSaveException {
+    public void updateTask(Task task)  {
         taskMap.replace(task.getId(), task);
     }
 
     @Override
-    public void updateEpic(Epic epic) throws FileBackedTaskManager.ManagerSaveException {
+    public void updateEpic(Epic epic)  {
         Epic oldEpic = epicMap.get(epic.getId());
         HashMap<Integer, Subtask> subtaskHashMap = epic.getSubtaskHashMap();
         subtaskHashMap.putAll(oldEpic.getSubtaskHashMap());
@@ -290,7 +289,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) throws FileBackedTaskManager.ManagerSaveException {
+    public void updateSubtask(Subtask subtask)  {
         HashMap<Integer, Subtask> subtaskHashMap = epicMap.get(subtask.getIdEpic()).getSubtaskHashMap();
         subtaskHashMap.replace(subtask.getId(), subtask);
         updateEpicStatus(subtask.getIdEpic());

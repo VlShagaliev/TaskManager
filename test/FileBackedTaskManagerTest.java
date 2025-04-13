@@ -38,7 +38,7 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    void fileIsEmptyTest() throws IOException{
+    void fileIsEmptyTest() throws IOException {
         File file = File.createTempFile("Backup","csv");
         Assertions.assertTrue(file.length() == 0);
     }

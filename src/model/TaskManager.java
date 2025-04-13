@@ -1,6 +1,5 @@
 package model;
 
-import fileBackedTaskManager.FileBackedTaskManager;
 import managers.HistoryManager;
 
 import java.util.List;
@@ -23,13 +22,13 @@ public interface TaskManager {
 
     void clearSubtask();
 
-    void deleteTaskById(int id) throws FileBackedTaskManager.ManagerSaveException;
+    void deleteTaskById(int id) ;
 
-    void deleteEpicById(int id) throws FileBackedTaskManager.ManagerSaveException;
+    void deleteEpicById(int id) ;
 
-    void deleteSubtaskById(int id) throws FileBackedTaskManager.ManagerSaveException;
+    void deleteSubtaskById(int id) ;
 
-    void deleteById(int id) throws FileBackedTaskManager.ManagerSaveException;
+    void deleteById(int id) ;
 
     Task getTask(int id);
 
@@ -37,19 +36,19 @@ public interface TaskManager {
 
     Subtask getSubtask(int id);
 
-    int addTask(Task newTask) throws FileBackedTaskManager.ManagerSaveException;
+    int addTask(Task newTask) ;
 
-    int addEpic(Epic newEpic) throws FileBackedTaskManager.ManagerSaveException;
+    int addEpic(Epic newEpic) ;
 
-    int addSubtask(Subtask newSubtask) throws FileBackedTaskManager.ManagerSaveException;
+    int addSubtask(Subtask newSubtask) ;
 
-    void updateEpicStatus(int id) throws FileBackedTaskManager.ManagerSaveException;
+    void updateEpicStatus(int id) ;
 
-    void updateTask(Task task) throws FileBackedTaskManager.ManagerSaveException;
+    void updateTask(Task task) ;
 
-    void updateEpic(Epic epic) throws FileBackedTaskManager.ManagerSaveException;
+    void updateEpic(Epic epic) ;
 
-    void updateSubtask(Subtask subtask) throws FileBackedTaskManager.ManagerSaveException;
+    void updateSubtask(Subtask subtask);
 
     List<Task> getTasks();
 
