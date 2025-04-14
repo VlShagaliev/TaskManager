@@ -1,17 +1,22 @@
 package TaskManager;
 
+import fileBackedTaskManager.FileBackedTaskManager;
 import managers.HistoryManager;
 import managers.Managers;
 import model.*;
 
+import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     static Managers managers = new Managers();
+    static TaskManager taskManager = managers.getDefault();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileBackedTaskManager.ManagerSaveException {
         Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = managers.getDefault();
+        File file = new File("Backup.csv");
+        taskManager = FileBackedTaskManager.loadFromFile(file);
         HistoryManager historyManager = taskManager.getHistoryManager();
         int command;
         while (true) {
@@ -98,7 +103,7 @@ public class Main {
                 case 8:
                     System.out.print("Введите ID Эпика подзадачи которого хотите вывести: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    if (taskManager.checkIdSubtask(id)) {
+                    if (taskManager.checkIdInEpic(id)) {
                         taskManager.printSubtaskByIdEpic(id);
                     } else {
                         System.out.println("Такого Эпика нет!");
@@ -169,7 +174,14 @@ public class Main {
                             numberOfProgress = Integer.parseInt(scanner.nextLine());
                             progress = setProgress(numberOfProgress);
                             if (progress != null) {
-                                Task task = taskManager.getTasks().get(id);
+                                Task task = null;
+                                List<Task> taskList = taskManager.getTasks();
+                                for (Task taskFromList : taskList){
+                                    if (taskFromList.getId() == id){
+                                        task = taskFromList;
+                                        break;
+                                    }
+                                }
                                 task.setProgress(progress);
                                 taskManager.updateTask(task);
                             }
@@ -178,7 +190,14 @@ public class Main {
                             numberOfProgress = Integer.parseInt(scanner.nextLine());
                             progress = setProgress(numberOfProgress);
                             if (progress != null) {
-                                Subtask subtask = (Subtask) taskManager.getSubtasks().get(id);
+                                Subtask subtask = null;
+                                List<Task> subTaskList = taskManager.getSubtasks();
+                                for (Task subtaskFromList : subTaskList){
+                                    if (subtaskFromList.getId() == id){
+                                        subtask = (Subtask) subtaskFromList;
+                                        break;
+                                    }
+                                }
                                 subtask.setProgress(progress);
                                 taskManager.updateSubtask(subtask);
                             }
@@ -255,7 +274,7 @@ public class Main {
         }
     }
 
-    private static void additionEpic(TaskManager taskManager) {
+    private static void additionEpic(TaskManager taskManager) throws FileBackedTaskManager.ManagerSaveException {
         Epic epic = new Epic("1длоотываа", "1dkiu5d");
         if (taskManager.addEpic(epic) > 0) {
             System.out.println("Добавлена задача под номером: " + epic.getId());
@@ -274,7 +293,7 @@ public class Main {
         }
     }
 
-    private static void additionTask(TaskManager taskManager) {
+    private static void additionTask(TaskManager taskManager) throws FileBackedTaskManager.ManagerSaveException {
         Task task = new Task("5sdfkjb45", "5kjsdfgjfb", Progress.NEW);
         taskManager.addTask(task);
         task = new Task("6afjhbsdf", "ksdfu4", Progress.IN_PROGRESS);
@@ -283,7 +302,7 @@ public class Main {
         taskManager.addTask(task);
     }
 
-    private static void additionSubtask(TaskManager taskManager) {
+    private static void additionSubtask(TaskManager taskManager) throws FileBackedTaskManager.ManagerSaveException {
         Subtask subtask = new Subtask("8sdlknfb", "8aslkfb", 2, Progress.NEW);
         taskManager.addSubtask(subtask);
         subtask = new Subtask("9sdlknfb", "9aslkfb", 3, Progress.NEW);
