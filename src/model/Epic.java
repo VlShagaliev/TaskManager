@@ -1,5 +1,6 @@
 package model;
 
+import java.time.Duration;
 import java.util.HashMap;
 
 public class Epic extends Task {
@@ -7,6 +8,7 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description, Progress.NEW);
+        duration = Duration.ofMinutes(0);
     }
 
     public HashMap<Integer, Subtask> getSubtaskHashMap() {

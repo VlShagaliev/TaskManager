@@ -232,8 +232,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addSubtask(Subtask newSubtask) {
         if (epicMap.containsKey(newSubtask.getIdEpic())) {
-            Epic currentEpic = epicMap.get(newSubtask.getIdEpic());
             allTaskCount++;
+            Epic currentEpic = epicMap.get(newSubtask.getIdEpic());
+            currentEpic.setDuration(currentEpic.getDuration().plus(newSubtask.getDuration()));
             newSubtask.setId(allTaskCount);
             currentEpic.addSubtask(newSubtask);
             updateEpicStatus(newSubtask.getIdEpic());

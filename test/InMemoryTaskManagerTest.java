@@ -5,6 +5,7 @@ import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,11 +153,13 @@ class InMemoryTaskManagerTest {
     void testHistoryReplaceTaskChecked() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
+        task.setDuration(Duration.ofMinutes(90));
         task.setId(1);
         taskManager.addTask(task);
         taskManager.printById(1);
         task = new Task("2", "2", Progress.NEW);
         task.setId(2);
+        task.setDuration(Duration.ofMinutes(30));
         taskManager.addTask(task);
         taskManager.printById(2);
         List<Task> previousHistory = new ArrayList<>(taskManager.getHistory());
@@ -166,13 +169,23 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void testTaskHaveDateTime(){
+        Task task = new Task("1", "1", Progress.NEW);
+        task.setDuration(Duration.ofMinutes(90));
+        task.setId(1);
+        Assertions.assertTrue(task.getStartTime() != null);
+    }
+
+    @Test
     void testHistoryRemovedTaskById() throws FileBackedTaskManager.ManagerSaveException {
         TaskManager taskManager = new InMemoryTaskManager();
         Task task = new Task("1", "1", Progress.NEW);
+        task.setDuration(Duration.ofMinutes(90));
         task.setId(1);
         taskManager.addTask(task);
         taskManager.printById(1);
         task = new Task("2", "2", Progress.NEW);
+        task.setDuration(Duration.ofMinutes(30));
         task.setId(2);
         taskManager.addTask(task);
         taskManager.printById(2);

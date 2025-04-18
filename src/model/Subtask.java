@@ -1,11 +1,10 @@
 package model;
 
 public class Subtask extends Task {
-
     private final int idEpic;
 
     public Subtask(String name, String description, int idEpic, Progress progress) {
-        super(name, description,progress);
+        super(name, description, progress);
         this.idEpic = idEpic;
     }
 
