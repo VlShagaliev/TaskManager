@@ -1,5 +1,7 @@
 package model;
 
+import fileBackedTaskManager.FileBackedTaskManager;
+
 public class Subtask extends Task {
     private final int idEpic;
 
@@ -14,6 +16,13 @@ public class Subtask extends Task {
 
     @Override
     public void print() {
-        System.out.println(id + ". Номер Эпика: " + idEpic + ". Подзадача: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
+        StringBuilder outputText = new StringBuilder(id + ". Номер Эпика: " + idEpic + ". Подзадача: " + name +
+                "|\t Описание: " + description + "|\t Статус: " + progress);
+        if (startTime != null) {
+            outputText.append("|\t Время начала: ").append(startTime.format(FileBackedTaskManager.dateTimeFormatter));
+        }
+        if (duration != null)
+            outputText.append("|\t Время окончания: ").append(getEndTime().format(FileBackedTaskManager.dateTimeFormatter));
+        System.out.println(outputText);
     }
 }

@@ -14,8 +14,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
+
     public FileBackedTaskManager(File file) {
         this.file = file;
+        if (!file.isFile()) {
+            save(); //создаем файл при его инициализации через метод сохранения данных в файл
+        }
     }
 
     @Override
@@ -173,32 +177,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             return null;
         }
         String dateTime;
+        StringBuilder stringBuilder = new StringBuilder(String.format("%d,%s,%s,%s,%s", task.getId(), typeTask, task.getName(),
+                task.getProgress().toString(), task.getDescription()));
+        if (typeTask == TypeTask.SUBTASK) {
+            stringBuilder.append(String.format(",%d", ((Subtask) task).getIdEpic()));
+        }
         if (task.getStartTime() != null) {
             dateTime = task.getStartTime().format(dateTimeFormatter);
-            return switch (typeTask) {
-                case EPIC, TASK ->
-                        new String(String.format("%d,%s,%s,%s,%s,%s,%02d:%02d", task.getId(), typeTask, task.getName(),
-                                task.getProgress().toString(), task.getDescription(), dateTime,
-                                task.getDuration().toHours(), task.getDuration().toMinutes()).getBytes(),
-                                StandardCharsets.UTF_8);
-                case SUBTASK ->
-                        new String(String.format("%d,%s,%s,%s,%s,%s,%s,%02d:%02d", task.getId(), typeTask, task.getName(),
-                                task.getProgress().toString(), task.getDescription(), ((Subtask) task).getIdEpic(),
-                                dateTime, task.getDuration().toHours(), task.getDuration().toMinutes()).getBytes(),
-                                StandardCharsets.UTF_8);
-            };
+            Duration duration;
+            if (task.getDuration() != null) {
+                duration = task.getDuration();
+                stringBuilder.append(String.format(",%s,%02d:%02d", dateTime,
+                        duration.toHours(), duration.toMinutes()));
+            } else {
+                stringBuilder.append(String.format(",%s,", dateTime));
+            }
         } else {
-            return switch (typeTask) {
-                case EPIC, TASK ->
-                        new String(String.format("%d,%s,%s,%s,%s,,", task.getId(), typeTask, task.getName(),
-                                task.getProgress().toString(), task.getDescription()).getBytes(),
-                                StandardCharsets.UTF_8);
-                case SUBTASK ->
-                        new String(String.format("%d,%s,%s,%s,%s,%s,,", task.getId(), typeTask, task.getName(),
-                                task.getProgress().toString(), task.getDescription(), ((Subtask) task).getIdEpic()).getBytes(),
-                                StandardCharsets.UTF_8);
-            };
+            switch (typeTask) {
+                case EPIC, TASK -> stringBuilder.append(",,");
+                case SUBTASK -> stringBuilder.append(",,,");
+            }
         }
+        return stringBuilder.toString();
     }
 
     public Task fromString(String value) {
@@ -212,29 +212,39 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         switch (taskString[1]) {
             case "TASK": {
                 task = new Task(taskString[2], taskString[4], progress);
-                LocalDateTime timeStart = getDateTime(taskString[5]);
-                Duration duration = getDuration(taskString[6]);
-                task.setDuration(duration);
-                task.setStartTime(timeStart);
+                if (taskString.length > 5) {
+                    task.setStartTime(getDateTime(taskString[5]));
+                    if (taskString.length > 6) {
+                        task.setDuration(getDuration(taskString[6]));
+                    }
+                    taskTreeSet.add(task);
+                }
                 task.setId(Integer.parseInt(taskString[0]));
+                task.setProgress(progress);
                 break;
             }
             case "EPIC": {
                 task = new Epic(taskString[2], taskString[4]);
-                LocalDateTime timeStart = getDateTime(taskString[5]);
-                Duration duration = getDuration(taskString[6]);
-                task.setDuration(duration);
-                task.setStartTime(timeStart);
+                if (taskString.length > 5) {
+                    task.setStartTime(getDateTime(taskString[5]));
+                    if (taskString.length > 6) {
+                        task.setDuration(getDuration(taskString[6]));
+                    }
+                    taskTreeSet.add(task);
+                }
                 task.setId(Integer.parseInt(taskString[0]));
                 task.setProgress(progress);
                 break;
             }
             case "SUBTASK": {
                 task = new Subtask(taskString[2], taskString[4], Integer.parseInt(taskString[5]), progress);
-                LocalDateTime timeStart = getDateTime(taskString[6]);
-                Duration duration = getDuration(taskString[7]);
-                task.setDuration(duration);
-                task.setStartTime(timeStart);
+                if (taskString.length > 6) {
+                    task.setStartTime(getDateTime(taskString[6]));
+                    if (taskString.length > 7) {
+                        task.setDuration(getDuration(taskString[7]));
+                    }
+                    taskTreeSet.add(task);
+                }
                 task.setId(Integer.parseInt(taskString[0]));
             }
         }
@@ -242,14 +252,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private LocalDateTime getDateTime(String stringTime) {
-        if (stringTime.equals("")){
+        if (stringTime.equals("")) {
             return null;
         }
         return LocalDateTime.parse(stringTime, dateTimeFormatter);
     }
 
     private Duration getDuration(String stringDuration) {
-        if (stringDuration.equals("")){
+        if (stringDuration.equals("")) {
             return null;
         }
         String[] durationParse = stringDuration.split(":");

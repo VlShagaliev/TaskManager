@@ -3,8 +3,10 @@ package model;
 import managers.HistoryManager;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
+
 
     void printAllTask();
 
@@ -22,13 +24,13 @@ public interface TaskManager {
 
     void clearSubtask();
 
-    void deleteTaskById(int id) ;
+    void deleteTaskById(int id);
 
-    void deleteEpicById(int id) ;
+    void deleteEpicById(int id);
 
-    void deleteSubtaskById(int id) ;
+    void deleteSubtaskById(int id);
 
-    void deleteById(int id) ;
+    void deleteById(int id);
 
     Task getTask(int id);
 
@@ -36,17 +38,17 @@ public interface TaskManager {
 
     Subtask getSubtask(int id);
 
-    int addTask(Task newTask) ;
+    int addTask(Task newTask);
 
-    int addEpic(Epic newEpic) ;
+    int addEpic(Epic newEpic);
 
-    int addSubtask(Subtask newSubtask) ;
+    int addSubtask(Subtask newSubtask);
 
-    void updateEpicStatus(int id) ;
+    void updateEpicStatus(int id);
 
-    void updateTask(Task task) ;
+    void updateTask(Task task);
 
-    void updateEpic(Epic epic) ;
+    void updateEpic(Epic epic);
 
     void updateSubtask(Subtask subtask);
 
@@ -65,4 +67,10 @@ public interface TaskManager {
     List<Task> getHistory();
 
     HistoryManager getHistoryManager();
+
+    void addToTreeSet(Task task);
+
+    TreeSet<Task> getPrioritizedTasks();
+
+    boolean intersectionTasks();
 }

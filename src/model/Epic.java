@@ -1,5 +1,7 @@
 package model;
 
+import fileBackedTaskManager.FileBackedTaskManager;
+
 import java.time.Duration;
 import java.util.HashMap;
 
@@ -8,7 +10,6 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description, Progress.NEW);
-        duration = Duration.ofMinutes(0);
     }
 
     public HashMap<Integer, Subtask> getSubtaskHashMap() {
@@ -25,7 +26,14 @@ public class Epic extends Task {
         subtaskHashMap.put(newSubtask.getId(), newSubtask);
     }
 
+
     public void print() {
-        System.out.println(id + ". Эпик: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
+        StringBuilder outputText = new StringBuilder(id + ". Эпик: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
+        if (startTime != null) {
+            outputText.append("|\t Время начала: ").append(startTime.format(FileBackedTaskManager.dateTimeFormatter));
+        }
+        if (duration != null)
+            outputText.append("|\t Время окончания: ").append(getEndTime().format(FileBackedTaskManager.dateTimeFormatter));
+        System.out.println(outputText);
     }
 }

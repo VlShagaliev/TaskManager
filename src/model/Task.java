@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable<Task>{
     protected int id;
     protected final String name;
     protected final String description;
@@ -50,8 +50,13 @@ public class Task {
     }
 
     public void print() {
-        System.out.println(id + ". Задача: " + name + "|\t Описание: " + description + "|\t Статус: " +
-                progress + "|\t Время начала: " + startTime.format(FileBackedTaskManager.dateTimeFormatter));
+        StringBuilder outputText = new StringBuilder(id + ". Задача: " + name + "|\t Описание: " + description + "|\t Статус: " + progress);
+        if (startTime != null) {
+            outputText.append("|\t Время начала: ").append(startTime.format(FileBackedTaskManager.dateTimeFormatter));
+        }
+        if (duration != null)
+            outputText.append("|\t Время окончания: ").append(getEndTime().format(FileBackedTaskManager.dateTimeFormatter));
+        System.out.println(outputText);
     }
 
     public void setProgress(Progress progress) {
@@ -84,5 +89,15 @@ public class Task {
 
     public LocalDateTime getEndTime() {
         return startTime.plusMinutes(duration.toMinutes());
+    }
+
+    @Override
+    public int compareTo(Task o) {
+        if (this.startTime.isAfter(o.startTime)){
+            return 1;
+        } else if (this.startTime.isBefore(o.startTime)){
+            return -1;
+        }
+        return 0;
     }
 }

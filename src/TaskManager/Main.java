@@ -15,7 +15,7 @@ public class Main {
     static Managers managers = new Managers();
     static TaskManager taskManager = managers.getDefault();
 
-    public static void main(String[] args) throws FileBackedTaskManager.ManagerSaveException {
+    public static void main(String[] args) throws FileBackedTaskManager.ManagerSaveException, IOException {
         Scanner scanner = new Scanner(System.in);
         File file = new File("Backup.csv");
         taskManager = FileBackedTaskManager.loadFromFile(file);
@@ -178,7 +178,7 @@ public class Main {
                             numberOfProgress = Integer.parseInt(scanner.nextLine());
                             progress = setProgress(numberOfProgress);
                             if (progress != null) {
-                                task = getTask(id);
+                                task = getTask(id, Action.SETPROGRESS);
                                 if (task != null) {
                                     task.setProgress(progress);
                                     taskManager.updateTask(task);
@@ -189,7 +189,7 @@ public class Main {
                             numberOfProgress = Integer.parseInt(scanner.nextLine());
                             progress = setProgress(numberOfProgress);
                             if (progress != null) {
-                                Subtask subtask = (Subtask) getTask(id);
+                                Subtask subtask = (Subtask) getTask(id, Action.SETPROGRESS);
                                 if (subtask != null) {
                                     subtask.setProgress(progress);
                                     taskManager.updateSubtask(subtask);
@@ -220,22 +220,33 @@ public class Main {
                 case 16:
                     System.out.print("Введите номер задачи, время начала которой хотите указать: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    task = getTask(id);
+                    task = getTask(id, Action.SETTIME);
                     if (task != null) {
                         localDateTime = printDateTime(scanner);
                         task.setStartTime(localDateTime);
+                        taskManager.updateTask(task);
+                        taskManager.addToTreeSet(task);
                     }
                     break;
                 case 17:
                     System.out.print("Введите номер задачи, длительность которой хотите указать: ");
                     id = Integer.parseInt(scanner.nextLine());
-                    task = getTask(id);
+                    task = getTask(id, Action.SETDURATUION);
                     if (task != null) {
                         newDuration = printDuration(scanner);
                         task.setDuration(newDuration);
+                        taskManager.updateTask(task);
                     }
                     break;
                 case 18:
+                    for (Task taskInTree : taskManager.getPrioritizedTasks()) {
+                        taskInTree.print();
+                    }
+                    break;
+                case 19:
+                    System.out.println("Пересекаются ли задачи: " + taskManager.intersectionTasks());
+                    break;
+                case 20:
                     return;
                 default:
                     System.out.println("Такого действия нет!");
@@ -263,28 +274,37 @@ public class Main {
         System.out.println("15. Удалить историю по номеру");
         System.out.println("16. Назначить время начала задачи");
         System.out.println("17. Указать длительность задачи");
-        System.out.println("18. Выход");
+        System.out.println("18. Вывести список приоритетных задач");
+        System.out.println("19. Проверить на пересечение задачи");
+        System.out.println("20. Выход");
         System.out.println("--------------------");
     }
 
-    public static Task getTask(int id) {
+    public static Task getTask(int id, Action action) {
+        Task task = null;
         if (taskManager.checkIdInTask(id)) {
             List<Task> taskList = taskManager.getTasks();
             for (Task taskFromList : taskList) {
                 if (taskFromList.getId() == id) {
-                    return taskFromList;
+                    task = taskFromList;
                 }
             }
         } else if (taskManager.checkIdSubtask(id)) {
             List<Task> subTaskList = taskManager.getSubtasks();
             for (Task subtaskFromList : subTaskList) {
                 if (subtaskFromList.getId() == id) {
-                    return subtaskFromList;
+                    task = subtaskFromList;
                 }
             }
         }
-        System.out.println("Невозможно изменить данные у данной задачи!");
-        return null;
+        if (taskManager.checkIdInEpic(id)) {
+            System.out.println("Невозможно изменить данные у данной задачи!");
+        }
+        if (action.equals(Action.SETDURATUION) && (task.getStartTime() == null)) {
+            System.out.println("Необходимо сперва указать время начала задачи");
+            return null;
+        }
+        return task;
     }
 
     public static void printMenuStatus() {
@@ -367,24 +387,19 @@ public class Main {
         Task task = new Task("5sdfkjb45", "5kjsdfgjfb", Progress.NEW);
         taskManager.addTask(task);
         task = new Task("6afjhbsdf", "ksdfu4", Progress.IN_PROGRESS);
-        task.setDuration(Duration.ofMinutes(20));
         taskManager.addTask(task);
         task = new Task("7sdkjbfbi4", "7sdfjbldsf", Progress.DONE);
-        task.setDuration(Duration.ofMinutes(90));
         taskManager.addTask(task);
     }
 
     private static void additionSubtask(TaskManager taskManager) throws FileBackedTaskManager.ManagerSaveException {
         Subtask subtask = new Subtask("8sdlknfb", "8aslkfb", 2, Progress.NEW);
-        subtask.setDuration(Duration.ofMinutes(5));
         taskManager.addSubtask(subtask);
         subtask = new Subtask("9sdlknfb", "9aslkfb", 3, Progress.NEW);
         taskManager.addSubtask(subtask);
         subtask = new Subtask("10sdlknfb", "10aslkfb", 3, Progress.IN_PROGRESS);
-        subtask.setDuration(Duration.ofMinutes(8));
         taskManager.addSubtask(subtask);
         subtask = new Subtask("11sdlknfb", "11aslkfb", 3, Progress.DONE);
-        subtask.setDuration(Duration.ofMinutes(15));
         taskManager.addSubtask(subtask);
     }
 }
